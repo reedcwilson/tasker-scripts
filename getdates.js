@@ -43,10 +43,24 @@ var getMessage = function(type) {
     "lost_boy": "Hi, {name}. This is Reed Wilson from the Grove 9th Ward. I am wondering if you are available for a short visit tomorrow between 7 and 8 to get to know you.",
     "visit": "Hi, {name}. This is Reed Wilson from the ward. I am wondering if you are available for a short visit tomorrow between 7 and 8 to get to know you.",
     "game_night": "Does family game night work for everyone on Monday at 7:00?",
+    "musical_number_confirm": "Hi, {name}. I am just doing a final check to see if you are still able to perform in Sacrament Meeting tomorrow?
+    "musical_number_name": "Hi, {name}. Do you know the name of the song you will be performing in Sacrament Meeting?
   };
   switch(type) {
     case "lost_boy":
     case "visit":
+    case "musical_number_confirm":
+    case "musical_number_name":
+      var names = arguments[1];
+      var nameStr = "";
+      for (var i = 0; i < names.length; i++) {
+        if (i === names.length - 1) {
+          nameStr += ", and";
+        } else if (i > 0) {
+          nameStr += ", ";
+        }
+        nameStr += names[i];
+      }
       return messages[type].formatUnicorn({name: arguments[1]});
     case "game_night":
       return messages[type];
@@ -65,10 +79,15 @@ var line = lines[num];
 tk.setGlobal("%CurrentText", num + 1);
 
 var parts = csvToArray(line);
-var name = parts[0];
-var nameparts = name.split(" ");
-var first = nameparts[0];
-var last = nameparts[1];
+var namesStr = parts[0];
+var names = nameStr.split(",");
+var firsts = [];
+var lasts = [];
+for (var i = 0; i < names.length; i++) {
+  var nameparts = name.split(" ");
+  firsts.push(nameparts[0]);
+  lasts.push(nameparts[1]);
+}
 
 var now = new Date();
 var nowMonth = now.getMonth() + 1;
@@ -80,11 +99,11 @@ if (month < nowMonth) {
   diffMonth = month - nowMonth;
 }
 
-tk.setGlobal("%ScheduledFirstname", first);
-tk.setGlobal("%ScheduledLastname", last);
+tk.setGlobal("%ScheduledFirstnames", firsts.toString());
+tk.setGlobal("%ScheduledLastnames", lasts.toString());
 tk.setGlobal("%ScheduledDiffMonth", diffMonth-1);
 tk.setGlobal("%ScheduledDate", parts[2]);
 tk.setGlobal("%ScheduledHour", parts[3]);
 tk.setGlobal("%ScheduledMinute", parts[4]);
 tk.setGlobal("%ScheduledAmpm", parts[5]);
-tk.setGlobal("%ScheduledMessage", getMessage(parts[6], first));
+tk.setGlobal("%ScheduledMessage", getMessage(parts[6], firsts));

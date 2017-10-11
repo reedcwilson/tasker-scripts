@@ -1,7 +1,7 @@
 //var tk = {
 //  local: (name) => {
 //    if (name === "%data") {
-//      return "\"Gillian Chavez,Happy Gilmore,John Henry\",10,11,3,30,pm,musical_number_name\nPaige Hone,11,20,3,30,pm,musical_number_name";
+//      return "Clay Brinton,10,16,3,30,pm,visit";
 //    }
 //  },
 //  global: (name) => {
@@ -128,7 +128,7 @@ if (month < nowMonth) {
 }
 
 tk.setGlobal("%ScheduledNames", namesStr);
-tk.setGlobal("%ScheduledDiffMonth", diffMonth-1);
+tk.setGlobal("%ScheduledDiffMonth", Math.max(0, diffMonth-1));
 tk.setGlobal("%ScheduledDate", parts[2]);
 tk.setGlobal("%ScheduledHour", parts[3]);
 tk.setGlobal("%ScheduledMinute", parts[4]);

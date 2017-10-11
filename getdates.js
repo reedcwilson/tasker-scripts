@@ -1,3 +1,22 @@
+//var tk = {
+//  local: (name) => {
+//    if (name === "%data") {
+//      return "\"Gillian Chavez,Happy Gilmore,John Henry\",10,11,3,30,pm,musical_number_name\nPaige Hone,11,20,3,30,pm,musical_number_name";
+//    }
+//  },
+//  global: (name) => {
+//    if (name === "%CurrentText") {
+//      return "0";
+//    }
+//  },
+//  setGlobal: (name, value) => {
+//    console.log(`${name}: ${value}`);
+//  },
+//  setLocal: (name, value) => {
+//    console.log(`${name}: ${value}`);
+//  },
+//};
+
 String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
 function () {
   "use strict";
@@ -13,7 +32,6 @@ function () {
       str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
     }
   }
-
   return str;
 };
 
@@ -38,30 +56,39 @@ function csvToArray(text) {
   return a;
 }
 
+var buildNameStr = function(names) {
+  var nameStr = "";
+  for (var i = 0; i < names.length; i++) {
+    if (i > 0 && i === names.length -1) {
+      if (i === 1) {
+        nameStr += " and ";
+      } else {
+        nameStr += ", and ";
+      }
+    }
+    else if (i > 0) {
+      nameStr += ", ";
+    }
+    nameStr += names[i];
+  }
+  return nameStr;
+};
+
 var getMessage = function(type) {
   var messages = {
     "lost_boy": "Hi, {name}. This is Reed Wilson from the Grove 9th Ward. I am wondering if you are available for a short visit tomorrow between 7 and 8 to get to know you.",
     "visit": "Hi, {name}. This is Reed Wilson from the ward. I am wondering if you are available for a short visit tomorrow between 7 and 8 to get to know you.",
     "game_night": "Does family game night work for everyone on Monday at 7:00?",
-    "musical_number_confirm": "Hi, {name}. I am just doing a final check to see if you are still able to perform in Sacrament Meeting tomorrow?
-    "musical_number_name": "Hi, {name}. Do you know the name of the song you will be performing in Sacrament Meeting?
+    "musical_number_confirm": "Hi, {name}. I am just doing a final check to see if you are still able to perform in Sacrament Meeting tomorrow?",
+    "musical_number_name": "Hi, {name}. Do you know the name of the song you will be performing in Sacrament Meeting?",
   };
   switch(type) {
     case "lost_boy":
     case "visit":
     case "musical_number_confirm":
     case "musical_number_name":
-      var names = arguments[1];
-      var nameStr = "";
-      for (var i = 0; i < names.length; i++) {
-        if (i === names.length - 1) {
-          nameStr += ", and";
-        } else if (i > 0) {
-          nameStr += ", ";
-        }
-        nameStr += names[i];
-      }
-      return messages[type].formatUnicorn({name: arguments[1]});
+      var nameStr = buildNameStr(arguments[1]);
+      return messages[type].formatUnicorn({name: nameStr});
     case "game_night":
       return messages[type];
     default:
@@ -80,11 +107,12 @@ tk.setGlobal("%CurrentText", num + 1);
 
 var parts = csvToArray(line);
 var namesStr = parts[0];
-var names = nameStr.split(",");
+var names = [];
 var firsts = [];
 var lasts = [];
+names = namesStr.split(",");
 for (var i = 0; i < names.length; i++) {
-  var nameparts = name.split(" ");
+  var nameparts = names[i].split(" ");
   firsts.push(nameparts[0]);
   lasts.push(nameparts[1]);
 }
@@ -99,8 +127,7 @@ if (month < nowMonth) {
   diffMonth = month - nowMonth;
 }
 
-tk.setGlobal("%ScheduledFirstnames", firsts.toString());
-tk.setGlobal("%ScheduledLastnames", lasts.toString());
+tk.setGlobal("%ScheduledNames", namesStr);
 tk.setGlobal("%ScheduledDiffMonth", diffMonth-1);
 tk.setGlobal("%ScheduledDate", parts[2]);
 tk.setGlobal("%ScheduledHour", parts[3]);
